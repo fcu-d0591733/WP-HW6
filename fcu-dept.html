@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+ <title>學院科系</title>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+ <script type="text/javascript">
+ (function ($) {
+ $.fn.typeselect = function (settings) {
+ var _defaultSettings = {};
+ var _settings = $.extend(_defaultSettings, settings);
+ var _handler = function () {
+
+ var container = this;
+ var selTypeCount = $(".TypeB option", container).length;
+ var selTypeA = $(".TypeA", container);
+ var selTypeB = $(".TypeB", container);
+ var TypeSelectResult = $(".TypeSelectResult", container);
+
+ selTypeA.change(function () {
+ $("option:gt(" + selTypeCount + ")", selTypeB).remove();
+ $("option:eq(" + selTypeCount + ")", selTypeB).remove();
+ var selectCity = $('option:selected', selTypeA).text();
+ $.each(typeJSON, function (TypeA, obj) {
+ if (TypeA == selectCity) {
+ $.each(obj, function (countyName, code) {
+ selTypeB
+ .append($("<option></option>")
+ .attr("value", countyName)
+ .text(countyName));
+ });
+ }
+ });
+ if (_settings.TypeB) {
+ $("option[value=" + _settings.TypeB + "]", selTypeB).prop('selected', true);
+ }
+ selTypeB.trigger('change');
+ });
+ selTypeB.change(function () {
+ TypeSelectResult.text('');
+ var selectCity = $('option:selected', selTypeA).text();
+ var selectCounty = $('option:selected', selTypeB).text();
+ $.each(typeJSON, function (TypeA, obj) {
+ if (TypeA == selectCity) {
+ $.each(obj, function (countyName, code) {
+ if (countyName == selectCounty) {
+ TypeSelectResult.text(code);
+ }
+ });
+ }
+ });
+ });
+ //main
+ $.each(typeJSON, function (value, key) {
+ selTypeA
+ .append($("<option></option>")
+ .attr("value", value)
+ .text(value));
+ });
+ //預設的選項
+ if (_settings.TypeA) {
+ $("option[value=" + _settings.TypeA + "]", selTypeA).prop('selected', true);
+ selTypeA.trigger('change');
+ }
+ };
+ return this.each(_handler);
+ };
+ })(jQuery);
+
+ var typeJSON = {
+ "商學院": {
+ "會計學系": " ",
+ "國際經營與貿易學系": " ",
+ "財稅學系": " "
+ },
+ "國際科技與管理學院": {
+ "澳洲墨爾本皇家理工大學商學與創新雙學士學位學程": " ",
+ "國際經營管理碩士學位學程": " ",
+ "美國普渡大學電機資訊雙學士學位學程": " "
+ },
+ "工學院": {
+ "纖維與複合材料學系": " ",
+ "工業工程與系統管理學系": " ",
+ "化學工程學系": " "
+ },
+ "資電學院": {
+ "資訊工程學系": " ",
+ "電機工程學系": " ",
+ "電子工程學系": " "
+ },
+ "建設學院": {
+ "建築專業學院學士班": " ",
+ "建築學士學位學程": " ",
+ "室內設計學士學位學程": " "
+}
+ 
+
+ }
+ $(function () {
+ $('.TypeSelect').typeselect({ TypeA: "商學院", TypeB: "會計學系" });
+ });
+ </script>
+</head>
+<body>
+ <div class="TypeSelect">
+ 選擇學院：<span class="TypeSelectResult"></span>
+ <select class="TypeA"></select>
+ <select class="TypeB"></select>
+ </div>
+</body>
+</html>
